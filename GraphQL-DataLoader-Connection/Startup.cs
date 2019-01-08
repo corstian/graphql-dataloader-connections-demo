@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Execution;
+using GraphQL.Http;
+using GraphQL.Relay.Types;
+using GraphQL.Server;
+using GraphQL.Types.Relay;
+using GraphQL_DataLoader_Connection.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GraphQL_DataLoader_Connection
 {
@@ -25,7 +28,31 @@ namespace GraphQL_DataLoader_Connection
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            // Register these relay types
+            services.AddTransient(typeof(ConnectionType<>));
+            services.AddTransient(typeof(EdgeType<>));
+            services.AddTransient<NodeInterface>();
+            services.AddTransient<PageInfoType>();
+
+            // Our various types
+            services.AddSingleton<RootSchema>();
+            services.AddSingleton<RootQuery>();
+            services.AddSingleton<CompanyType>();
+            services.AddSingleton<PersonType>();
+
+            // And some stuff to make GraphQL work
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.TryAddSingleton<IDependencyResolver>(q => new FuncDependencyResolver(q.GetRequiredService));
+            services.TryAddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.TryAddSingleton<IDocumentWriter, DocumentWriter>();
+            services.TryAddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
+            services.TryAddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
+
+            services.AddGraphQL(options =>
+            {
+                options.EnableMetrics = true;
+                options.ExposeExceptions = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,7 +69,8 @@ namespace GraphQL_DataLoader_Connection
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseGraphQL<RootSchema>("/graph");
         }
     }
 }
