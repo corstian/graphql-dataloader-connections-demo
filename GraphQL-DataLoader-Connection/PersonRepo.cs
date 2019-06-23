@@ -1,7 +1,9 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using GraphQL_DataLoader_Connection.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,14 +19,14 @@ namespace GraphQL_DataLoader_Connection
         static PersonRepo()
         {
             using (var reader = new StreamReader("Resources\\FakeNameGenerator.com_1eeb3d1a.csv"))
-            using (var csv = new CsvReader(reader))
+            using (var csv = new CsvReader(reader, new Configuration(CultureInfo.InvariantCulture)))
             {
                 var randomizer = new Random();
 
                 var records = csv.GetRecords<dynamic>();
                 Persons = records.Select(q => new Person
                 {
-                    Id = new Guid(q.GUID),
+                    Id = Guid.NewGuid(),
                     CompanyId = CompanyRepo.Companies[randomizer.Next(0, 12)].Id,
                     FirstName = q.GivenName,
                     LastName = q.Surname,
