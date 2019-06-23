@@ -1,7 +1,9 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using GraphQL_DataLoader_Connection.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,7 +19,7 @@ namespace GraphQL_DataLoader_Connection
         static PersonRepo()
         {
             using (var reader = new StreamReader("Resources\\FakeNameGenerator.com_1eeb3d1a.csv"))
-            using (var csv = new CsvReader(reader))
+            using (var csv = new CsvReader(reader, new Configuration(CultureInfo.InvariantCulture)))
             {
                 var randomizer = new Random();
 
