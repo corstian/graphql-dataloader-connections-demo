@@ -61,3 +61,12 @@ query {
   }
 }
 ```
+
+## Related resources
+I have published several blog posts about topics related to the `graphql-dotnet` library. These might be useful during your journey developing a graph API:
+
+- [Implementing pagination with GraphQL.NET and Relay](https://corstianboerman.com/2019-03-08/implementing-pagination-with-graphql-net-and-relay.html)
+- [Cursor based pagination with SQL Server using C# (and SQL)](https://corstianboerman.com/2019-03-06/cursor-based-pagination-with-sql-server.html)
+- [Generic data loaders for Entity Framework in GraphQL](https://corstianboerman.com/posts/2019-02-12/generic-data-loaders-for-entity-framework-in-graphql.html)
+- [GraphQL API Design: Cursors](https://corstianboerman.com/2019-10-24/graphql-api-design-cursors.html)
+- [GraphQL.NET: Authorization](https://corstianboerman.com/2019-12-16/graphql-dotnet-authorization.html)
